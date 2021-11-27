@@ -4,7 +4,7 @@
 const { ActivityHandler, MessageFactory } = require('botbuilder');
 
 const { ContactHR } = require('./componentDialogs/contactHR');
-const optionsCard  = require('./resources/adaptiveCards/optionsCard2');
+
 const { ContactITServices } = require('./componentDialogs/contactITServices');
 const {CardFactory} = require('botbuilder');
 
@@ -106,10 +106,7 @@ const helpText = "## Hello! My name is TaihoBuddy! " +
 " When you do so, the department will have the full context of your search and will contact you via eMail / Phone to resolve your question. " +  
 " Which department are you interested in today?"
 
-const CARDS = [
 
-    optionsCard
-];
 
 
 
