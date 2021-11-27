@@ -1,0 +1,22 @@
+{
+	"$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+	"type": "AdaptiveCard",
+	"version": "1.0",
+	"actions": [{
+		"type": "Action.Submit",
+		"title": "People (Human Resources)",
+		"data": "People"
+	}, {
+		"type": "Action.Submit",
+		"title": "IT Services (Policies and Procedures)",
+		"data": "IT Services"
+	}, {
+		"type": "Action.Submit",
+		"title": "Help / About TaihoBuddy",
+		"data": "Help"
+	}, {
+		"type": "Action.Submit",
+		"title": "Cancel / Done",
+		"data": "Cancel"
+	}]
+}
