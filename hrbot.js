@@ -9,8 +9,13 @@ const { ContactITServices } = require('./componentDialogs/contactITServices');
 const {CardFactory} = require('botbuilder');
 
 const {LuisRecognizer, QnAMaker}  = require('botbuilder-ai');
+const optionsCard = require('./resources/adaptiveCards/optionsCard4');
 
 const CHOICE_PROMPT    = 'CHOICE_PROMPT';
+const TEXT_PROMPT    = 'TEXT_PROMPT';
+
+const CARDS = [optionsCard]
+
 
 var configResultHeaderLiteral;
 var numberOfresultsToShow;
@@ -88,7 +93,8 @@ const selectorPeopleJSON = {"Items": [
     ] 
 }
 
-const greetingText = " - Hello! I am ready to answer your query to the best of my ability. Please choose the department and ask your question...";
+//const welcomeText = " - Welcome! I am ready to answer your query to the best of my ability. Please choose the department and ask your question...";
+const greetingText = " - Hello! Please choose the department and ask your question...";
 const chooseDepartmentText = "Sure. Please choose the department...";
 const noResultText = "### Sorry, your search has yielded no result. Please try another search or contact ";
 const byeText = "Bye now... just say Hello to wake me up again!";
@@ -106,18 +112,13 @@ const helpText = "## Hello! My name is TaihoBuddy! " +
 " When you do so, the department will have the full context of your search and will contact you via eMail / Phone to resolve your question. " +  
 " Which department are you interested in today?"
 
-
-
-
-
-
 class hrbot extends ActivityHandler {
     constructor(conversationState,userState) {
         super();
         console.log (userState)
 
         this.conversationState = conversationState;
-        console.log ("**************usern state*************************")
+        console.log ("**************user state*************************")
         this.userState = userState;
         this.dialogState = conversationState.createProperty("dialogState");
         this.contactHRDialog = new ContactHR(this.conversationState,this.userState);
@@ -164,6 +165,7 @@ class hrbot extends ActivityHandler {
 
         this.onDialog(async (context, next) => {
             console.log ("In onDialog ")
+            console.log (JSON.stringify(context))
             // Save any state changes. The load happened during the execution of the Dialog.
             await this.conversationState.saveChanges(context, false);
             await this.userState.saveChanges(context, false);
@@ -190,13 +192,20 @@ class hrbot extends ActivityHandler {
             
 
             //  displayAdaptiveCards (domainSelectorJSON, greetingText)
-               var cardGen = generateAdaptiveCard(domainSelectorJSON)
+               var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+               //console.log ("CARDS " + JSON.stringify(CARDS[0]))
+               
+
                cardGen = JSON.parse(cardGen)
+            
                var CARDS2 = [cardGen];
                await turnContext.sendActivity({
-                    text: greetingText,
+                    text: welcomeText,
                     attachments: [CardFactory.adaptiveCard(CARDS2[0])]
                });
+              // const flow = await this.conversationFlow.get(turnContext, { lastQuestionAsked: question.none });
+               
+              // return await turnContext.prompt(TEXT_PROMPT, '');
 
             }
         }
@@ -225,7 +234,7 @@ class hrbot extends ActivityHandler {
         if(intent == askQuestionIntent ){
             console.log ("in askQuestion intent");
             await context.sendActivity(chooseDepartmentText);          
-            var cardGen = generateAdaptiveCard(domainSelectorJSON)
+            var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
             cardGen = JSON.parse(cardGen)
             var CARDS2 = [cardGen];
             await context.sendActivity({
@@ -235,12 +244,13 @@ class hrbot extends ActivityHandler {
         }
         if(intent == greetingIntent ){
             console.log ("in greetingIntent intent");
+            console.log ("Channelid " + JSON.stringify(context._activity.channelId))
            // await context.sendActivity(greetingText);            
-            var cardGen = generateAdaptiveCard(domainSelectorJSON)
+            var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
             cardGen = JSON.parse(cardGen)
             var CARDS2 = [cardGen];
             await context.sendActivity({
-                 text: greetingText,
+                 text: greetingText + "Current Channel: " + context._activity.channelId,
                  attachments: [CardFactory.adaptiveCard(CARDS2[0])]
             }); 
         }
@@ -251,7 +261,7 @@ class hrbot extends ActivityHandler {
             console.log ("contactPeopleDone " + conversationData.contactPeopleDone)
             
             await context.sendActivity(helpText);  
-            var cardGen = generateAdaptiveCard(domainSelectorJSON)
+            var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
             cardGen = JSON.parse(cardGen)
             var CARDS2 = [cardGen];
             await context.sendActivity({
@@ -319,7 +329,7 @@ class hrbot extends ActivityHandler {
             if (conversationData.deptSaved === itServicesDept){
                 console.log("selecting department new IT SErvices")
                 //selectorDialog = selectorITServices  
-                var cardGen = generateAdaptiveCard(selectorITServicesJSON)
+                var cardGen = generateAdaptiveCardTeams(selectorITServicesJSON)
                 cardGen = JSON.parse(cardGen)
                 var CARDS2 = [cardGen];
                 await context.sendActivity({
@@ -330,7 +340,7 @@ class hrbot extends ActivityHandler {
             if (conversationData.deptSaved === peopleDept){
                 console.log("selecting department new People ")
                 //selectorDialog = selectorPeople
-                var cardGen = generateAdaptiveCard(selectorPeopleJSON)
+                var cardGen = generateAdaptiveCardTeams(selectorPeopleJSON)
                 cardGen = JSON.parse(cardGen)
                 var CARDS2 = [cardGen];
                 await context.sendActivity({
@@ -432,6 +442,58 @@ class hrbot extends ActivityHandler {
     
     return cardFormatted
 }
+function generateAdaptiveCardTeams(jsonObject) {
+
+
+    var len  = jsonObject.Items.length
+    var jsonStr = '';
+
+    for (var i=0;i<len;i++){
+         jsonStr = jsonStr +'{ '
+        + '"type" : "Action.Submit"'       
+        + ', '
+        + '"title" : '
+        + '"'+ jsonObject.Items[i].label + '"'
+        + ', '
+        + '"data" : '
+        + '{'
+        + '"msteams" :' 
+        + '{'
+        + '"type": "messageBack"'
+        + ', '
+        + '"displayText": ' 
+        + '"'+ jsonObject.Items[i].label + '"' +  ', '
+        + '"text": ' 
+        + '"'+ jsonObject.Items[i].value + '"' +  ', '
+        + '"value": '
+        + '"'+ jsonObject.Items[i].value + '"' 
+
+       
+        + ' }'
+        + ' }'
+        + ' }'
+        + ", ";         
+    }
+    //Remove trailing comma
+    jsonStr = jsonStr.replace(/,\s*$/, "");
+    
+    var cardFormatted = '{ '
+    + '"$schema": "https://adaptivecards.io/schemas/adaptive-card.json"'
+    + ", "
+    + '"type": "AdaptiveCard"'
+    + ", "
+    + '"version": "1.0"'
+    + ", "
+    + '"actions":'
+    + " [ " 
+    +  jsonStr 
+    +  "]"
+    + "}"
+
+    
+    return cardFormatted
+}
+
 
 
 

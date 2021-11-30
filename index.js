@@ -48,7 +48,7 @@ const onTurnErrorHandler = async (context, error) => {
     );
 
     // Send a message to the user
-    await context.sendActivity('The bot encountered an error or bug.');
+    await context.sendActivity('The bot encountered an error or bug.' + JSON.stringify (error));
     await context.sendActivity('To continue to run this bot, please fix the bot source code.');
 };
 

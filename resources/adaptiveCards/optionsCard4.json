@@ -1,0 +1,50 @@
+{
+	"$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+	"type": "AdaptiveCard",
+	"version": "1.0",
+	"actions": [{
+		"type": "Action.Submit",
+		"title": "People (Human Resources)",
+		"data": {
+			"msteams": {
+				"type": "messageBack",
+				"displayText": "People (Human Resources)",
+				"text": "People",
+				"value": "People"
+			}
+		}
+	}, {
+		"type": "Action.Submit",
+		"title": "IT Services (Policies and Procedures",
+		"data": {
+			"msteams": {
+				"type": "messageBack",
+				"displayText": "IT Services (Policies and Procedures",
+				"text": "IT Services",
+				"value": "IT Services"
+			}
+		}
+	}, {
+		"type": "Action.Submit",
+		"title": "Help - About TaihoBuddy",
+		"data": {
+			"msteams": {
+				"type": "messageBack",
+				"displayText": "Help - About TaihoBuddy",
+				"text": "Help - About TaihoBuddy",
+				"value": "Help"
+			}
+		}
+	}, {
+		"type": "Action.Submit",
+		"title": "Cancel / Done",
+		"data": {
+			"msteams": {
+				"type": "messageBack",
+				"displayText": "Cancel / Done",
+				"text": "Cancel / Done",
+				"value": "Cancel"
+			}
+		}
+	}]
+}

@@ -126,7 +126,7 @@ class ContactITServices extends ComponentDialog {
         console.log ("contactITServicesDone " + step.values.contactITServicesDone);
         endDialog = false;
         // Running a prompt here means the next WaterfallStep will be run when the users response is received.
-        var cardGen = generateAdaptiveCard(problemAreaITServicesJSON)
+        var cardGen = generateAdaptiveCardTeams(problemAreaITServicesJSON)
         cardGen = JSON.parse(cardGen)
         var CARDS2 = [cardGen];
         var greetingText = "Please choose the problem area..."
@@ -147,7 +147,7 @@ class ContactITServices extends ComponentDialog {
         step.values.contactITServicesDone = false
         console.log ("contactITServicesDone " + step.values.contactITServicesDone)
         
-        var cardGen = generateAdaptiveCard(problemBriefOptionsJSON)
+        var cardGen = generateAdaptiveCardTeams(problemBriefOptionsJSON)
         cardGen = JSON.parse(cardGen)
         var CARDS2 = [cardGen];
         var greetingText = "And the problem you faced..."
@@ -165,7 +165,7 @@ class ContactITServices extends ComponentDialog {
         var probBrief = step.result;
         await step.context.sendActivity("### Problem Area: " + step.values.probArea + " ,  Problem brief: " + probBrief + emailSentText)
        // await this.sendSuggestedActions(step.context, domainSelector);
-        var cardGen = generateAdaptiveCard(domainSelectorJSON)
+        var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
         cardGen = JSON.parse(cardGen)
         var CARDS2 = [cardGen];
         var greetingText = "You can continue with search..."
@@ -199,6 +199,57 @@ function generateAdaptiveCard(jsonObject) {
         + ", "
         + '"data" : '
         + '"'+ jsonObject.Items[i].value + '"' 
+        + ' }'
+        + ", ";         
+    }
+    //Remove trailing comma
+    jsonStr = jsonStr.replace(/,\s*$/, "");
+    
+    var cardFormatted = '{ '
+    + '"$schema": "https://adaptivecards.io/schemas/adaptive-card.json"'
+    + ", "
+    + '"type": "AdaptiveCard"'
+    + ", "
+    + '"version": "1.0"'
+    + ", "
+    + '"actions":'
+    + " [ " 
+    +  jsonStr 
+    +  "]"
+    + "}"
+
+    
+    return cardFormatted
+}
+function generateAdaptiveCardTeams(jsonObject) {
+
+
+    var len  = jsonObject.Items.length
+    var jsonStr = '';
+
+    for (var i=0;i<len;i++){
+         jsonStr = jsonStr +'{ '
+        + '"type" : "Action.Submit"'       
+        + ', '
+        + '"title" : '
+        + '"'+ jsonObject.Items[i].label + '"'
+        + ', '
+        + '"data" : '
+        + '{'
+        + '"msteams" :' 
+        + '{'
+        + '"type": "messageBack"'
+        + ', '
+        + '"displayText": ' 
+        + '"'+ jsonObject.Items[i].label + '"' +  ', '
+        + '"text": ' 
+        + '"'+ jsonObject.Items[i].value + '"' +  ', '
+        + '"value": '
+        + '"'+ jsonObject.Items[i].value + '"' 
+
+       
+        + ' }'
+        + ' }'
         + ' }'
         + ", ";         
     }
