@@ -34,6 +34,9 @@ const contactHRIntent = "contactHR";
 const contactITServicesIntent = "contactITServices";
 const doneIntent = "doneIntent";
 const helpIntent = "helpIntent";
+const msteams = "msteams";
+const webchat = "webchat";
+const emulator = "emulator";
 
 const configMaxResults = 3;
 const domainSelector = ["People", "IT Services", 'Help', 'Cancel'];
@@ -109,8 +112,7 @@ const confidenceScoreText = "\n \n" + "**Confidence score:** "
 const helpText = "## Hello! My name is TaihoBuddy! " +
 " My job is to answer your queries by foraging the curated Knowledge Bases and get you the most relevant answers. " + 
 " However, if you think that you need to contact a personnel at some point, then you can do so by choosing the department during the conversation, like - Contact People..." + 
-" When you do so, the department will have the full context of your search and will contact you via eMail / Phone to resolve your question. " +  
-" Which department are you interested in today?"
+" When you do so, the department will have the full context of your search and will contact you via eMail / Phone to resolve your question. ";
 
 class hrbot extends ActivityHandler {
     constructor(conversationState,userState) {
@@ -165,7 +167,7 @@ class hrbot extends ActivityHandler {
 
         this.onDialog(async (context, next) => {
             console.log ("In onDialog ")
-            console.log (JSON.stringify(context))
+           // console.log (JSON.stringify(context))
             // Save any state changes. The load happened during the execution of the Dialog.
             await this.conversationState.saveChanges(context, false);
             await this.userState.saveChanges(context, false);
@@ -189,10 +191,13 @@ class hrbot extends ActivityHandler {
         for (const idx in activity.membersAdded) {
             if (activity.membersAdded[idx].id !== activity.recipient.id) {
                // const welcomeMessage = `Welcome to People Buddy ${ activity.membersAdded[idx].name }. Please choose the department`;
-            
-
-            //  displayAdaptiveCards (domainSelectorJSON, greetingText)
-               var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+               var channelId = turnContext._activity.channelId
+               console.log ("In welcome " + channelId)
+                if (channelId === msteams){
+                    var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+                } else {                
+                    var cardGen = generateAdaptiveCard(domainSelectorJSON)
+                }
                //console.log ("CARDS " + JSON.stringify(CARDS[0]))
                
 
@@ -219,6 +224,7 @@ class hrbot extends ActivityHandler {
 
     async dispatchToIntentAsync(context,intent,entities){
         console.log ("In dispatchToIntentAsync: " + intent)
+        var channelId = context._activity.channelId
         const conversationData = await this.conversationData.get(context,{}); 
         var currentIntent = '';
         var QnAMakerOptions = {
@@ -234,7 +240,12 @@ class hrbot extends ActivityHandler {
         if(intent == askQuestionIntent ){
             console.log ("in askQuestion intent");
             await context.sendActivity(chooseDepartmentText);          
-            var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+            //var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+            if (channelId === msteams){
+                var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+            }else {
+                 var cardGen = generateAdaptiveCard(domainSelectorJSON)
+            }
             cardGen = JSON.parse(cardGen)
             var CARDS2 = [cardGen];
             await context.sendActivity({
@@ -245,12 +256,18 @@ class hrbot extends ActivityHandler {
         if(intent == greetingIntent ){
             console.log ("in greetingIntent intent");
             console.log ("Channelid " + JSON.stringify(context._activity.channelId))
+            
            // await context.sendActivity(greetingText);            
-            var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+           // var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+            if (channelId === msteams){
+                var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+            } else {
+                var cardGen = generateAdaptiveCard(domainSelectorJSON)
+            }
             cardGen = JSON.parse(cardGen)
             var CARDS2 = [cardGen];
             await context.sendActivity({
-                 text: greetingText + "Current Channel: " + context._activity.channelId,
+                 text: greetingText + "Current Channel is: " + context._activity.channelId,
                  attachments: [CardFactory.adaptiveCard(CARDS2[0])]
             }); 
         }
@@ -261,7 +278,12 @@ class hrbot extends ActivityHandler {
             console.log ("contactPeopleDone " + conversationData.contactPeopleDone)
             
             await context.sendActivity(helpText);  
-            var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+           // var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+            if (channelId === msteams){
+                var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+            } else {
+                var cardGen = generateAdaptiveCard(domainSelectorJSON)
+            }
             cardGen = JSON.parse(cardGen)
             var CARDS2 = [cardGen];
             await context.sendActivity({
@@ -329,7 +351,12 @@ class hrbot extends ActivityHandler {
             if (conversationData.deptSaved === itServicesDept){
                 console.log("selecting department new IT SErvices")
                 //selectorDialog = selectorITServices  
-                var cardGen = generateAdaptiveCardTeams(selectorITServicesJSON)
+              //  var cardGen = generateAdaptiveCardTeams(selectorITServicesJSON)
+                if (channelId === msteams){
+                    var cardGen = generateAdaptiveCardTeams(selectorITServicesJSON)
+                } else {
+                    var cardGen = generateAdaptiveCard(selectorITServicesJSON)
+                }
                 cardGen = JSON.parse(cardGen)
                 var CARDS2 = [cardGen];
                 await context.sendActivity({
@@ -340,7 +367,12 @@ class hrbot extends ActivityHandler {
             if (conversationData.deptSaved === peopleDept){
                 console.log("selecting department new People ")
                 //selectorDialog = selectorPeople
-                var cardGen = generateAdaptiveCardTeams(selectorPeopleJSON)
+               // var cardGen = generateAdaptiveCardTeams(selectorPeopleJSON)
+                if (channelId === msteams){
+                    var cardGen = generateAdaptiveCardTeams(selectorPeopleJSON)
+                } else {
+                    var cardGen = generateAdaptiveCard(selectorPeopleJSON)
+                }
                 cardGen = JSON.parse(cardGen)
                 var CARDS2 = [cardGen];
                 await context.sendActivity({

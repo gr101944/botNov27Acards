@@ -5,6 +5,9 @@ const {ConfirmPrompt, ChoicePrompt, DateTimePrompt, NumberPrompt, TextPrompt  } 
 
 const {DialogSet, DialogTurnStatus } = require('botbuilder-dialogs');
 const {CardFactory} = require('botbuilder');
+const msteams = "msteams";
+const webchat = "webchat";
+const emulator = "emulator";
 
 
 const CHOICE_PROMPT    = 'CHOICE_PROMPT';
@@ -117,6 +120,8 @@ class ContactHR extends ComponentDialog {
 
     async run(turnContext, accessor, entities) {
         console.log ("in run...")
+        var channelId = turnContext._activity.channelId
+        console.log (channelId)
         const dialogSet = new DialogSet(accessor);
         dialogSet.add(this);
 
@@ -129,12 +134,24 @@ class ContactHR extends ComponentDialog {
         }
     }
 
-    async getProblemArea(step) {
-        console.log ("In getProblemArea");
+    async getProblemArea(step, channelId) {
+        console.log ("In getProblemArea " );
+        //console.log ((step))
+        console.log ((step.context.activity.channelId))
+        
+       // console.log ((step.context._activity_channelId))
         step.values.contactPeopleDone = false  
         endDialog = false;
         // Running a prompt here means the next WaterfallStep will be run when the users response is received.
-        var cardGen = generateAdaptiveCardTeams(problemAreaPeopleJSON)
+       // var cardGen = generateAdaptiveCardTeams(problemAreaPeopleJSON)
+       var channelId = step.context.activity.channelId;
+        if (channelId === msteams){
+            var cardGen = generateAdaptiveCardTeams(problemAreaPeopleJSON)
+        } else {
+            var cardGen = generateAdaptiveCard(problemAreaPeopleJSON)
+        }
+        console.log (cardGen)
+        
         cardGen = JSON.parse(cardGen)
         var CARDS2 = [cardGen];
         var greetingText = "Please choose the problem area..."
@@ -149,13 +166,19 @@ class ContactHR extends ComponentDialog {
            
     }
 
-    async getProblemBrief(step){
+    async getProblemBrief(step, channelId){
         console.log ("In getProblemBrief")  
         step.values.contactPeopleDone = false      
         step.values.probArea = step.result
         //console.log ("step.result " + step.result)
         console.log ("step.values.probArea " + step.values.probArea)
-        var cardGen = generateAdaptiveCardTeams(problemBriefOptionsJSON)
+        var channelId = step.context.activity.channelId;
+       // var cardGen = generateAdaptiveCardTeams(problemBriefOptionsJSON)
+        if (channelId === msteams){
+            var cardGen = generateAdaptiveCardTeams(problemBriefOptionsJSON)
+        } else {
+            var cardGen = generateAdaptiveCard(problemBriefOptionsJSON)
+        }
         cardGen = JSON.parse(cardGen)
         var CARDS2 = [cardGen];
         var greetingText = "And the problem you faced..."
@@ -173,7 +196,13 @@ class ContactHR extends ComponentDialog {
         var probBrief = step.result;
         await step.context.sendActivity("### Problem Area: " + step.values.probArea + " ,  Problem brief: " + probBrief + emailSentText)
        // await this.sendSuggestedActions(step.context, domainSelector);
-        var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+        //var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+        var channelId = step.context.activity.channelId;
+        if (channelId === msteams){
+            var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+        } else {
+            var cardGen = generateAdaptiveCard(domainSelectorJSON)
+        }
         cardGen = JSON.parse(cardGen)
         var CARDS2 = [cardGen];
         var greetingText = "You can continue with search..."

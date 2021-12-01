@@ -1,6 +1,9 @@
 const {WaterfallDialog, ComponentDialog } = require('botbuilder-dialogs');
 const { ActivityHandler, MessageFactory } = require('botbuilder');
 const {CardFactory} = require('botbuilder');
+const msteams = "msteams";
+const webchat = "webchat";
+const emulator = "emulator";
 
 const {ConfirmPrompt, ChoicePrompt, DateTimePrompt, NumberPrompt, TextPrompt  } = require('botbuilder-dialogs');
 
@@ -110,6 +113,7 @@ class ContactITServices extends ComponentDialog {
    }
 
     async run(turnContext, accessor, entities) {
+        var channelId = turnContext._activity.channelId
         const dialogSet = new DialogSet(accessor);
         dialogSet.add(this);
 
@@ -120,13 +124,20 @@ class ContactITServices extends ComponentDialog {
         }
     }
 
-    async getProblemArea(step) {
+    async getProblemArea(step, channelId) {
+        
         console.log ("In getProblemArea");
         step.values.contactITServicesDone = false;
         console.log ("contactITServicesDone " + step.values.contactITServicesDone);
         endDialog = false;
         // Running a prompt here means the next WaterfallStep will be run when the users response is received.
-        var cardGen = generateAdaptiveCardTeams(problemAreaITServicesJSON)
+       // var cardGen = generateAdaptiveCardTeams(problemAreaITServicesJSON)
+        var channelId = step.context.activity.channelId;
+        if (channelId === msteams){
+            var cardGen = generateAdaptiveCardTeams(problemAreaITServicesJSON)
+        } else {
+            var cardGen = generateAdaptiveCard(problemAreaITServicesJSON)
+        }
         cardGen = JSON.parse(cardGen)
         var CARDS2 = [cardGen];
         var greetingText = "Please choose the problem area..."
@@ -140,14 +151,20 @@ class ContactITServices extends ComponentDialog {
            
     }
 
-    async getProblemBrief(step){
+    async getProblemBrief(step, channelId){
         console.log ("In getProblemBrief")        
        // console.log(step.result)
         step.values.probArea = step.result
         step.values.contactITServicesDone = false
         console.log ("contactITServicesDone " + step.values.contactITServicesDone)
         
-        var cardGen = generateAdaptiveCardTeams(problemBriefOptionsJSON)
+        //var cardGen = generateAdaptiveCardTeams(problemBriefOptionsJSON)
+        var channelId = step.context.activity.channelId;
+        if (channelId === msteams){
+            var cardGen = generateAdaptiveCardTeams(problemBriefOptionsJSON)
+        } else {
+            var cardGen = generateAdaptiveCard(problemBriefOptionsJSON)
+        }
         cardGen = JSON.parse(cardGen)
         var CARDS2 = [cardGen];
         var greetingText = "And the problem you faced..."
@@ -160,12 +177,18 @@ class ContactITServices extends ComponentDialog {
         
     }
 
-    async sendEmail(step){
+    async sendEmail(step, channelId){
         console.log ("In sendEmail");
         var probBrief = step.result;
         await step.context.sendActivity("### Problem Area: " + step.values.probArea + " ,  Problem brief: " + probBrief + emailSentText)
        // await this.sendSuggestedActions(step.context, domainSelector);
-        var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+        //var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+        var channelId = step.context.activity.channelId;
+        if (channelId === msteams){
+            var cardGen = generateAdaptiveCardTeams(domainSelectorJSON)
+        } else {      
+            var cardGen = generateAdaptiveCard(domainSelectorJSON)
+        }
         cardGen = JSON.parse(cardGen)
         var CARDS2 = [cardGen];
         var greetingText = "You can continue with search..."
