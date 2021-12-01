@@ -92,7 +92,7 @@ const problemBriefOptionsJSON = {"Items": [
 }
 const problemAreaText = "Please choose the problem area...";
 const problemBriefText = "Brief description of the problem that you may have faced...";
-const probAreaTipText = "Tip: Problem area is the sub-domain within the IT Services department about which you had issued your search";
+const probAreaTipText = "Tip: Problem area is the sub-domain within the PEOPLE department about which you had issued your search";
 const problemBriefTipText = "Tip: Problem brief is the reason due to which you considered contacting the department"
 const emailSentText = " \n \n eMail sent to People Team. They will get back to ASAP. You can continue with your search..."
 var endDialog ='';
