@@ -90,8 +90,10 @@ const problemBriefOptionsJSON = {"Items": [
 
     ] 
 }
-const problemAreaText = "Please select the topic about which you need assistance...";
-const problemBriefText = "And what went wrong?";
+const problemAreaText = "Please choose the problem area...";
+const problemBriefText = "Brief description of the problem that you may have faced...";
+const probAreaTipText = "Tip: Problem area is the sub-domain within the IT Services department about which you had issued your search";
+const problemBriefTipText = "Tip: Problem brief is the reason due to which you considered contacting the department"
 const emailSentText = " \n \n eMail sent to People Team. They will get back to ASAP. You can continue with your search..."
 var endDialog ='';
 
@@ -134,7 +136,7 @@ class ContactHR extends ComponentDialog {
         }
     }
 
-    async getProblemArea(step, channelId) {
+    async getProblemArea(step) {
         console.log ("In getProblemArea " );
         //console.log ((step))
         console.log ((step.context.activity.channelId))
@@ -154,19 +156,17 @@ class ContactHR extends ComponentDialog {
         
         cardGen = JSON.parse(cardGen)
         var CARDS2 = [cardGen];
-        var greetingText = "Please choose the problem area..."
-
         const cardPrompt = MessageFactory.text('');
         await step.context.sendActivity({
-            text: greetingText,
+            text: problemAreaText,
             attachments: [CardFactory.adaptiveCard(CARDS2[0])]
        });
-       return await step.prompt(TEXT_PROMPT, 'Tip: Problem area is the sub-domain within the People department about which you had raised a query');
+       return await step.prompt(TEXT_PROMPT, probAreaTipText);
  
            
     }
 
-    async getProblemBrief(step, channelId){
+    async getProblemBrief(step){
         console.log ("In getProblemBrief")  
         step.values.contactPeopleDone = false      
         step.values.probArea = step.result
@@ -181,12 +181,12 @@ class ContactHR extends ComponentDialog {
         }
         cardGen = JSON.parse(cardGen)
         var CARDS2 = [cardGen];
-        var greetingText = "And the problem you faced..."
+        
         await step.context.sendActivity({
-             text: greetingText,
+             text: problemBriefText,
              attachments: [CardFactory.adaptiveCard(CARDS2[0])]
         }); 
-        return await step.prompt(TEXT_PROMPT, 'Tip: Problem brief is the reason due to which you considered contacting the department');
+        return await step.prompt(TEXT_PROMPT, problemBriefText);
       //  return await step.prompt(CHOICE_PROMPT, problemBriefText, problemBriefOptions);        
     }
 

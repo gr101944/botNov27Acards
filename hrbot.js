@@ -102,8 +102,8 @@ const chooseDepartmentText = "Sure. Please choose the department...";
 const noResultText = "### Sorry, your search has yielded no result. Please try another search or contact ";
 const byeText = "Bye now... just say Hello to wake me up again!";
 const oneResultText = "# There is only one result: ";
-const welcomeText = "Welcome to Taiho Buddy!! Please choose the department and ask your question.";
-const searchConfirmText1 = "OK. Ask your question, we will search the " ;
+const welcomeText = "Welcome to Taiho Buddy!! Please choose the department...";
+const searchConfirmText1 = "Please type your question, we will search the " ;
 const searchConfirmText2 = " Knowledge Base and get you the best results!" ;
 const searchYieldText1 = "# Your search has yielded ";
 const searchYieldText2 = " results: ";
@@ -249,7 +249,7 @@ class hrbot extends ActivityHandler {
             cardGen = JSON.parse(cardGen)
             var CARDS2 = [cardGen];
             await context.sendActivity({
-                 text: greetingText,
+                 text: '',
                  attachments: [CardFactory.adaptiveCard(CARDS2[0])]
             }); 
         }
@@ -267,7 +267,7 @@ class hrbot extends ActivityHandler {
             cardGen = JSON.parse(cardGen)
             var CARDS2 = [cardGen];
             await context.sendActivity({
-                 text: greetingText + "Current Channel is: " + context._activity.channelId,
+                 text: greetingText,
                  attachments: [CardFactory.adaptiveCard(CARDS2[0])]
             }); 
         }
@@ -287,7 +287,7 @@ class hrbot extends ActivityHandler {
             cardGen = JSON.parse(cardGen)
             var CARDS2 = [cardGen];
             await context.sendActivity({
-                 text: greetingText,
+                 text: '',
                  attachments: [CardFactory.adaptiveCard(CARDS2[0])]
             });          
            // await this.sendSuggestedActions(context, domainSelector);
@@ -360,7 +360,7 @@ class hrbot extends ActivityHandler {
                 cardGen = JSON.parse(cardGen)
                 var CARDS2 = [cardGen];
                 await context.sendActivity({
-                     text: greetingText,
+                     text: '',
                      attachments: [CardFactory.adaptiveCard(CARDS2[0])]
                 });              
             }
@@ -376,7 +376,7 @@ class hrbot extends ActivityHandler {
                 cardGen = JSON.parse(cardGen)
                 var CARDS2 = [cardGen];
                 await context.sendActivity({
-                     text: greetingText,
+                     text: '',
                      attachments: [CardFactory.adaptiveCard(CARDS2[0])]
                 }); 
                 

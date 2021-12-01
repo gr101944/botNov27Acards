@@ -89,6 +89,10 @@ const problemAreaITServicesJSON = {"Items": [
 
     ] 
 }
+const problemAreaText = "Please choose the problem area...";
+const problemBriefText = "Brief description of the problem that you may have faced...";
+const probAreaTipText = "Tip: Problem area is the sub-domain within the IT Services department about which you had issued your search";
+const problemBriefTipText = "Tip: Problem brief is the reason due to which you considered contacting the department"
 
 
 class ContactITServices extends ComponentDialog {
@@ -113,7 +117,7 @@ class ContactITServices extends ComponentDialog {
    }
 
     async run(turnContext, accessor, entities) {
-        var channelId = turnContext._activity.channelId
+       // var channelId = turnContext._activity.channelId
         const dialogSet = new DialogSet(accessor);
         dialogSet.add(this);
 
@@ -124,7 +128,7 @@ class ContactITServices extends ComponentDialog {
         }
     }
 
-    async getProblemArea(step, channelId) {
+    async getProblemArea(step) {
         
         console.log ("In getProblemArea");
         step.values.contactITServicesDone = false;
@@ -140,18 +144,18 @@ class ContactITServices extends ComponentDialog {
         }
         cardGen = JSON.parse(cardGen)
         var CARDS2 = [cardGen];
-        var greetingText = "Please choose the problem area..."
+        
 
         const cardPrompt = MessageFactory.text('');
         await step.context.sendActivity({
-            text: greetingText,
+            text: problemAreaText,
             attachments: [CardFactory.adaptiveCard(CARDS2[0])]
        });
-       return await step.prompt(TEXT_PROMPT, 'Tip: Problem area is the sub-domain within the IT Services department about which you had raised a query');
+       return await step.prompt(TEXT_PROMPT, probAreaTipText);
            
     }
 
-    async getProblemBrief(step, channelId){
+    async getProblemBrief(step){
         console.log ("In getProblemBrief")        
        // console.log(step.result)
         step.values.probArea = step.result
@@ -167,17 +171,17 @@ class ContactITServices extends ComponentDialog {
         }
         cardGen = JSON.parse(cardGen)
         var CARDS2 = [cardGen];
-        var greetingText = "And the problem you faced..."
+        
         await step.context.sendActivity({
-             text: greetingText,
+             text: problemBriefText,
              attachments: [CardFactory.adaptiveCard(CARDS2[0])]
         }); 
-        return await step.prompt(TEXT_PROMPT, 'Tip: Problem brief is the reason due to which you considered contacting the department');
+        return await step.prompt(TEXT_PROMPT, problemBriefTipText);
         
         
     }
 
-    async sendEmail(step, channelId){
+    async sendEmail(step){
         console.log ("In sendEmail");
         var probBrief = step.result;
         await step.context.sendActivity("### Problem Area: " + step.values.probArea + " ,  Problem brief: " + probBrief + emailSentText)
